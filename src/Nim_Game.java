@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 
-public class Juego15Palos extends JFrame {
+public class Nim_Game extends JFrame {
     JLabel[] palos; // Array de JLabels para los palos
     boolean[] seleccionados; // Array para verificar si un palo está seleccionado
     int jugadorActual; // 1 para jugador 1, 2 para jugador 2
@@ -17,9 +17,9 @@ public class Juego15Palos extends JFrame {
     boolean recogido = false; // true si la maquina ha recogido palos, false si no ha recogido los palos
     int delay = 2000; // Tiempo de espera de la maquina en milisegundos
 
-    public Juego15Palos() {
+    public Nim_Game() {
         // Configuración de la ventana
-        setTitle("Juego de los 15 palos");
+        setTitle("Nim Game");
         setSize(800, 800); // Tamaño de la ventana
         setResizable(false); // No redimensionable
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cerrar al cerrar la ventana
@@ -286,7 +286,7 @@ public class Juego15Palos extends JFrame {
     public static void main(String[] args) {
         // Crear la ventana y hacerla visible
         SwingUtilities.invokeLater(() -> {
-            Juego15Palos ventana = new Juego15Palos();
+            Nim_Game ventana = new Nim_Game();
             ventana.setVisible(true);
         });
     }
@@ -318,7 +318,6 @@ public class Juego15Palos extends JFrame {
             if (nuevoFila1 < fila1 && nuevoFila1 >= 0 && nuevoFila1 <= 3) {
                 int recoger = fila1 - nuevoFila1;
                 recogerPalosMaquina(1, recoger, false);
-                //System.out.println("MAQUINA! -> Para ganarte dejo: " + nuevoFila1 + " " + fila2 + " " + fila3);
                 return;
             }
 
@@ -327,7 +326,6 @@ public class Juego15Palos extends JFrame {
             if (nuevoFila2 < fila2 && nuevoFila2 >= 0 && nuevoFila2 <= 5) {
                 int recoger = fila2 - nuevoFila2;
                 recogerPalosMaquina(2, recoger, false);
-                //System.out.println("MAQUINA! -> Para ganarte dejo: " + fila1 + " " + nuevoFila2 + " " + fila3);
                 return;
             }
 
@@ -336,11 +334,10 @@ public class Juego15Palos extends JFrame {
             if (nuevoFila3 < fila3 && nuevoFila3 >= 0 && nuevoFila3 <= 7) {
                 int recoger = fila3 - nuevoFila3;
                 recogerPalosMaquina(3, recoger, false);
-                //System.out.println("MAQUINA! -> Para ganarte dejo: " + fila1 + " " + fila2 + " " + nuevoFila3);
                 return;
             }
         } else {
-            //System.out.println("MAQUINA! -> Vas por buen camino.");
+            // Si el resultado es 0, la maquina selecciona una fila al azar
             Random random = new Random();
             int fila = random.nextInt(3) + 1;
 
