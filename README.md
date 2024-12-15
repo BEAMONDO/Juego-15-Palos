@@ -1,1 +1,1 @@
-# Juego-15-Palos
+# Nim-Game
