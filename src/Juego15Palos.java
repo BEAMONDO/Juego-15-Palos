@@ -4,17 +4,18 @@ import java.awt.event.*;
 import java.util.Random;
 
 public class Juego15Palos extends JFrame {
-    private JLabel[] palos; // Array de JLabels para los palos
-    private boolean[] seleccionados; // Array para verificar si un palo está seleccionado
-    private int jugadorActual; // 1 para jugador 1, 2 para jugador 2
-    private JButton botonRecoger; // Botón para recoger los palos
-    private JButton botonReiniciar; // Botón para reiniciar el juego
-    private JButton botonModo; // Botón para cambiar entre modos de juego
-    private int lineaSeleccionada; // Línea actualmente seleccionada (1, 2 o 3)
-    private JLabel lblTurno; // JLabel para mostrar el turno del jugador
-    private boolean modoDosJugadores; // true para modo dos jugadores, false para contra la máquina
-    private boolean esTurnoMaquina; // true si es el turno de la máquina, false si es el turno del jugador
-    boolean recogido = false;
+    JLabel[] palos; // Array de JLabels para los palos
+    boolean[] seleccionados; // Array para verificar si un palo está seleccionado
+    int jugadorActual; // 1 para jugador 1, 2 para jugador 2
+    JButton botonRecoger; // Botón para recoger los palos
+    JButton botonReiniciar; // Botón para reiniciar el juego
+    JButton botonModo; // Botón para cambiar entre modos de juego
+    int lineaSeleccionada; // Línea actualmente seleccionada (1, 2 o 3)
+    JLabel lblTurno; // JLabel para mostrar el turno del jugador
+    boolean modoDosJugadores; // true para modo dos jugadores, false para contra la máquina
+    boolean esTurnoMaquina; // true si es el turno de la máquina, false si es el turno del jugador
+    boolean recogido = false; // true si la maquina ha recogido palos, false si no ha recogido los palos
+    int delay = 2000; // Tiempo de espera de la maquina en milisegundos
 
     public Juego15Palos() {
         // Configuración de la ventana
@@ -30,8 +31,8 @@ public class Juego15Palos extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 //ImageIcon fondo = new ImageIcon("C:/Users/David/eclipse-workspace/JuegoDeLos15Palos/imagenes/fondo.jpg");
-                ImageIcon fondo = new ImageIcon("/home/alumn0/eclipse-workspace/Juego15Palos/imagenes/fondo.jpg");
-                //ImageIcon fondo = new ImageIcon(getClass().getResource("/imagenes/fondo.jpg"));
+                //ImageIcon fondo = new ImageIcon("/home/alumn0/eclipse-workspace/Juego15Palos/imagenes/fondo.jpg");
+                ImageIcon fondo = new ImageIcon(getClass().getResource("/imagenes/fondo.jpg"));
                 g.drawImage(fondo.getImage(), 0, 0, getWidth(), getHeight(), this);
             }
         };
@@ -42,8 +43,8 @@ public class Juego15Palos extends JFrame {
 
         // Cargar imagen de informacion
         //ImageIcon iconoOriginal = new ImageIcon("C:/Users/David/eclipse-workspace/JuegoDeLos15Palos/imagenes/info.png");
-        ImageIcon iconoOriginal = new ImageIcon("/home/alumn0/eclipse-workspace/Juego15Palos/imagenes/info.png");
-        //ImageIcon iconoOriginal = new ImageIcon(getClass().getResource("/imagenes/info.png"));
+        //ImageIcon iconoOriginal = new ImageIcon("/home/alumn0/eclipse-workspace/Juego15Palos/imagenes/info.png");
+        ImageIcon iconoOriginal = new ImageIcon(getClass().getResource("/imagenes/info.png"));
         Image imagenOriginal = iconoOriginal.getImage(); 
         Image imagenReescalada = imagenOriginal.getScaledInstance(60, 60, Image.SCALE_SMOOTH); // Reescalar la imagen al tamaño deseado
         ImageIcon iconoReescalado = new ImageIcon(imagenReescalada); // Crear un nuevo ImageIcon con la imagen reescalada
@@ -62,8 +63,8 @@ public class Juego15Palos extends JFrame {
 
         // Cargar la imagen del palo y aumentar su tamaño
         //ImageIcon imagenPalo = new ImageIcon("C:/Users/David/eclipse-workspace/JuegoDeLos15Palos/imagenes/palo.png");
-        ImageIcon imagenPalo = new ImageIcon("/home/alumn0/eclipse-workspace/Juego15Palos/imagenes/palo.png");
-        //ImageIcon imagenPalo = new ImageIcon(getClass().getResource("/imagenes/palo.png"));
+        //ImageIcon imagenPalo = new ImageIcon("/home/alumn0/eclipse-workspace/Juego15Palos/imagenes/palo.png");
+        ImageIcon imagenPalo = new ImageIcon(getClass().getResource("/imagenes/palo.png"));
         Image img = imagenPalo.getImage();
         img = img.getScaledInstance(imagenPalo.getIconWidth() * 2, imagenPalo.getIconHeight() * 2, Image.SCALE_SMOOTH);
         imagenPalo = new ImageIcon(img);
@@ -236,7 +237,7 @@ public class Juego15Palos extends JFrame {
                 habilitarControles(false); // Deshabilitar controles
     
                 // Esperar 1 segundo antes de que la máquina haga su movimiento
-                Timer timer = new Timer(2000, new ActionListener() {
+                Timer timer = new Timer(delay, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         realizarMovimientoMaquina(); // Llama a un método para que la máquina haga su movimiento
@@ -291,100 +292,66 @@ public class Juego15Palos extends JFrame {
     }
 
     private void realizarMovimientoMaquina() {
-        // Contar los palos visibles en cada fila
-        int[] cpf = new int[4]; // Fila 0 no se usará
+
+        int fila1 = 0, fila2 = 0, fila3 = 0;
     
         // Contar palos visibles por fila
         for (int i = 0; i < palos.length; i++) {
             if (palos[i].isVisible()) {
-                if (i < 3) cpf[1]++;
-                else if (i < 8) cpf[2]++;
-                else cpf[3]++;
+                if (i < 3) fila1++;
+                else if (i < 8) fila2++;
+                else fila3++;
             }
         }
 
-        // 245, 246, 247, 256, 257, 312, 345, 346, 347, 354, 356, 357
         // ---------------------------------------------------------------------------------------------------------------- //
+        // Calcular el XOR de los tres números
+        int resultado = fila1 ^ fila2 ^ fila3;
 
-        // 110, 200, 223, 232, 313, 331, 122, 133, 144, 155, 303, 320, 111 // fila 1 (-1)
-        // 300, 210, 201, 323, 332, 222, 233, 244, 255, 211 // fila 1 (-2)
-        // 310, 301, 322, 333, 344, 355, 311 // fila 1 (-3)
-        if ((cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 0) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 0) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 3) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 2) || (cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 1) || (cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 2) || (cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 3) || (cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 4) || (cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 0) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 1)) {
-            recogerPalosMaquina(1, 1, false);
-        } else if ((cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 0) || (cpf[1] == 2 && cpf[2] == 1 && cpf[3] == 0) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 1) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 3) || (cpf[1] == 2 && cpf[2] == 4 && cpf[3] == 4) || (cpf[1] == 2 && cpf[2] == 5 && cpf[3] == 5) || (cpf[1] == 2 && cpf[2] == 1 && cpf[3] == 1)) {
-            recogerPalosMaquina(1, 2, false);
-        } else if ((cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 0) || (cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 1) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 2) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 4 && cpf[3] == 4) || (cpf[1] == 3 && cpf[2] == 5 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 1)) {
-            recogerPalosMaquina(1, 3, false);
-        }
+        // Mostrar el resultado del XOR
+        //System.out.println("El resultado del XOR es: " + resultado);
 
-        // 020, 142, 241, 032, 043, 054, 212, 230, 340 // fila 2 (-1)
-        // 120, 021, 030, 143, 152, 251, 341, 042, 053, 240, 350, 121 // fila 2 (-2)
-        // 130, 031, 040, 153, 243, 342, 351, 052, 250, 131 // fila 2 (-3)
-        // 140, 041, 050, 253, 352, 242, 343, 141 // fila 2 (-4)
-        // 150, 051, 252, 353, 151 // fila 2 (-5)
-        if ((cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 0) || (cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 4 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 2) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 3) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 4) || (cpf[1] == 2 && cpf[2] == 1 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 0) || (cpf[1] == 3 && cpf[2] == 4 && cpf[3] == 0)) {
-            recogerPalosMaquina(2, 1, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 0) || (cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 0) || (cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 3) || (cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 5 && cpf[3] == 1) || (cpf[1] == 3 && cpf[2] == 4 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 2) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 3) || (cpf[1] == 2 && cpf[2] == 4 && cpf[3] == 0) || (cpf[1] == 3 && cpf[2] == 5 && cpf[3] == 0) || (cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 1)) {
-            recogerPalosMaquina(2, 2, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 0) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 0) || (cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 3) || (cpf[1] == 2 && cpf[2] == 4 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 4 && cpf[3] == 2) || (cpf[1] == 3 && cpf[2] == 5 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 5 && cpf[3] == 0) || (cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 1)) {
-            recogerPalosMaquina(2, 3, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 0) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 0) || (cpf[1] == 2 && cpf[2] == 5 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 5 && cpf[3] == 2) || (cpf[1] == 2 && cpf[2] == 4 && cpf[3] == 2) || (cpf[1] == 3 && cpf[2] == 4 && cpf[3] == 3) || (cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 1)) {
-            recogerPalosMaquina(2, 4, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 0) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 1) || (cpf[1] == 2 && cpf[2] == 5 && cpf[3] == 2) || (cpf[1] == 3 && cpf[2] == 5 && cpf[3] == 3) || (cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 1)) {
-            recogerPalosMaquina(2, 5, false);
-        }
-
-        // 101, 011, 002, 124, 214, 023, 034, 045, 056, 203, 304, 221, 146 // fila 3 (-1)
-        // 102, 012, 003, 125, 134, 215, 314, 024, 035, 046, 057, 204, 305, 112, 147, 156 // fila 3 (-2)
-        // 103, 013, 004, 126, 135, 216, 234, 315, 324, 025, 036, 047, 205, 306, 113, 157 // fila 3 (-3)
-        // 104, 014, 005, 127, 136, 217, 235, 316, 325, 026, 037, 206, 307, 224, 334, 114 // fila 3 (-4)
-        // 105, 015, 006, 137, 236, 317, 326, 027, 207, 225, 335, 115 // fila 3 (-5)
-        // 106, 016, 007, 237, 327, 226, 336, 116 // fila 3 (-6)
-        // 107, 017, 227, 337, 117 // fila 3 (-7)
-        if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 0 && cpf[3] == 2) || (cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 4) || (cpf[1] == 2 && cpf[2] == 4 && cpf[3] == 1) || (cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 3) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 4) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 5) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 6) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 3) || (cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 4) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 1) || (cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 6)) {
-            recogerPalosMaquina(3, 1, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 2) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 2) || (cpf[1] == 0 && cpf[2] == 0 && cpf[3] == 3) || (cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 5) || (cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 4) || (cpf[1] == 2 && cpf[2] == 1 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 4) || (cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 4) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 5) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 6) || (cpf[1] == 0 && cpf[2] == 5 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 4) || (cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 5) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 2) || (cpf[1] == 1 && cpf[2] == 4 && cpf[3] == 7) || (cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 6)) {
-            recogerPalosMaquina(3, 2, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 3) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 3) || (cpf[1] == 0 && cpf[2] == 0 && cpf[3] == 4) || (cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 6) || (cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 5) || (cpf[1] == 2 && cpf[2] == 1 && cpf[3] == 6) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 4) || (cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 4) || (cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 5) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 6) || (cpf[1] == 0 && cpf[2] == 4 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 6) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 3) || (cpf[1] == 1 && cpf[2] == 5 && cpf[3] == 7)) {
-            recogerPalosMaquina(3, 3, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 4) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 4) || (cpf[1] == 0 && cpf[2] == 0 && cpf[3] == 5) || (cpf[1] == 1 && cpf[2] == 2 && cpf[3] == 7) || (cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 6) || (cpf[1] == 2 && cpf[2] == 1 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 6) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 5) || (cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 6) || (cpf[1] == 0 && cpf[2] == 3 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 6) || (cpf[1] == 3 && cpf[2] == 0 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 4) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 4) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 4)) {
-            recogerPalosMaquina(3, 4, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 5) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 5) || (cpf[1] == 0 && cpf[2] == 0 && cpf[3] == 6) || (cpf[1] == 1 && cpf[2] == 3 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 6) || (cpf[1] == 3 && cpf[2] == 1 && cpf[3] == 7) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 6) || (cpf[1] == 0 && cpf[2] == 2 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 0 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 5) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 5) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 5)) {
-            recogerPalosMaquina(3, 5, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 6) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 6) || (cpf[1] == 0 && cpf[2] == 0 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 3 && cpf[3] == 7) || (cpf[1] == 3 && cpf[2] == 2 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 6) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 6) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 6)) {
-            recogerPalosMaquina(3, 6, false);
-        } else if ((cpf[1] == 1 && cpf[2] == 0 && cpf[3] == 7) || (cpf[1] == 0 && cpf[2] == 1 && cpf[3] == 7) || (cpf[1] == 2 && cpf[2] == 2 && cpf[3] == 7) || (cpf[1] == 3 && cpf[2] == 3 && cpf[3] == 7) || (cpf[1] == 1 && cpf[2] == 1 && cpf[3] == 7)) {
-            recogerPalosMaquina(3, 7, false);
-        }
-
-        // ---------------------------------------------------------------------------------------------------------------- //
-        
-        // Si no hay combinacion, recoger un palo aleatorio visible
-        else {
-            if (recogido){
-                // Cambiar de turno al jugador
-                jugadorActual = 1; // Cambiar de vuelta al jugador
-                esTurnoMaquina = false; // Indicar que es el turno del jugador
-                lblTurno.setText("Jugador 1"); // Actualizar el JLabel
-                // Habilitar controles después del movimiento de la máquina
-                habilitarControles(true);
+        // Si el resultado no es 0, modificar uno de los números para que el XOR sea 0
+        if (resultado != 0) {
+            // Intentar modificar el primer número
+            int nuevoFila1 = fila1 ^ resultado;
+            if (nuevoFila1 < fila1 && nuevoFila1 >= 0 && nuevoFila1 <= 3) {
+                int recoger = fila1 - nuevoFila1;
+                recogerPalosMaquina(1, recoger, false);
+                //System.out.println("MAQUINA! -> Para ganarte dejo: " + nuevoFila1 + " " + fila2 + " " + fila3);
                 return;
             }
+
+            // Intentar modificar el segundo número
+            int nuevoFila2 = fila2 ^ resultado;
+            if (nuevoFila2 < fila2 && nuevoFila2 >= 0 && nuevoFila2 <= 5) {
+                int recoger = fila2 - nuevoFila2;
+                recogerPalosMaquina(2, recoger, false);
+                //System.out.println("MAQUINA! -> Para ganarte dejo: " + fila1 + " " + nuevoFila2 + " " + fila3);
+                return;
+            }
+
+            // Intentar modificar el tercer número
+            int nuevoFila3 = fila3 ^ resultado;
+            if (nuevoFila3 < fila3 && nuevoFila3 >= 0 && nuevoFila3 <= 7) {
+                int recoger = fila3 - nuevoFila3;
+                recogerPalosMaquina(3, recoger, false);
+                //System.out.println("MAQUINA! -> Para ganarte dejo: " + fila1 + " " + fila2 + " " + nuevoFila3);
+                return;
+            }
+        } else {
+            //System.out.println("MAQUINA! -> Vas por buen camino.");
             Random random = new Random();
             int fila = random.nextInt(3) + 1;
 
-            while (!((fila == 1 && cpf[1] >= 1) || (fila == 2 && cpf[2] >= 1) || (fila == 3 && cpf[3] >= 1))) {
+            while (!((fila == 1 && fila1 >= 1) || (fila == 2 && fila2 >= 1) || (fila == 3 && fila3 >= 1))) {
                 fila = random.nextInt(3) + 1; // Genera un nuevo random hasta encontrar una fila válida
             }
             recogerPalosMaquina(fila, 1, true); // Recoger 1 palo de la fila seleccionada
         }
-    
-        // Cambiar de turno al jugador
-        jugadorActual = 1; // Cambiar de vuelta al jugador
-        esTurnoMaquina = false; // Indicar que es el turno del jugador
-        lblTurno.setText("Jugador 1"); // Actualizar el JLabel
-        // Habilitar controles después del movimiento de la máquina
-        habilitarControles(true);
+        // ---------------------------------------------------------------------------------------------------------------- //
+
+        cambiarTurnoJugador();
     }
 
     public void recogerPalosMaquina(int fila, int recoger, boolean esRandom) {
@@ -416,3 +383,27 @@ public class Juego15Palos extends JFrame {
         habilitarControles(true);
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------- //
+// Si es turno de la maquina y la mesa esta asi, la maquina gana con los de -
+//       -              -    -              -         -
+// 245, 246, 247, 256, 257, 312, 345, 346, 347, 354, 356, 357
+// ---------------------------------------------------------------------------------------------------------------- //
+
+// 110, 200, 223, 232, 313, 331, 122, 133, 144, 155, 303, 320, 111 // fila 1 (-1)
+// 300, 210, 201, 323, 332, 222, 233, 244, 255, 211 // fila 1 (-2)
+// 310, 301, 322, 333, 344, 355, 311 // fila 1 (-3)
+
+// 020, 142, 241, 032, 043, 054, 212, 230, 340 // fila 2 (-1)
+// 120, 021, 030, 143, 152, 251, 341, 042, 053, 240, 350, 121 // fila 2 (-2)
+// 130, 031, 040, 153, 243, 342, 351, 052, 250, 131 // fila 2 (-3)
+// 140, 041, 050, 253, 352, 242, 343, 141 // fila 2 (-4)
+// 150, 051, 252, 353, 151 // fila 2 (-5)
+
+// 101, 011, 002, 124, 214, 023, 034, 045, 056, 203, 304, 221, 146 // fila 3 (-1)
+// 102, 012, 003, 125, 134, 215, 314, 024, 035, 046, 057, 204, 305, 112, 147, 156 // fila 3 (-2)
+// 103, 013, 004, 126, 135, 216, 234, 315, 324, 025, 036, 047, 205, 306, 113, 157 // fila 3 (-3)
+// 104, 014, 005, 127, 136, 217, 235, 316, 325, 026, 037, 206, 307, 224, 334, 114 // fila 3 (-4)
+// 105, 015, 006, 137, 236, 317, 326, 027, 207, 225, 335, 115 // fila 3 (-5)
+// 106, 016, 007, 237, 327, 226, 336, 116 // fila 3 (-6)
+// 107, 017, 227, 337, 117 // fila 3 (-7)
